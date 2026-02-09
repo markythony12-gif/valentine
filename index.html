@@ -47,12 +47,13 @@
     }
 
     button {
-      flex: 1;
+      width: 140px;
       font-size: 18px;
       padding: 12px 0;
       border-radius: 30px;
       border: none;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     #yes {
@@ -63,6 +64,21 @@
     #no {
       background: #ddd;
       color: black;
+      transition: transform 0.35s ease;
+    }
+
+    /* SHAKE ANIMATION */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+      100% { transform: translateX(0); }
+    }
+
+    .shake {
+      animation: shake 0.4s;
     }
 
     .celebration {
@@ -109,7 +125,6 @@
 </head>
 <body>
 
-  <!-- Background Music -->
   <audio id="bgMusic" loop>
     <source src="tahanan.mp3" type="audio/mpeg">
   </audio>
@@ -139,6 +154,7 @@
     const music = document.getElementById("bgMusic");
 
     let musicStarted = false;
+    let hasMoved = false;
 
     function startMusic() {
       if (!musicStarted) {
@@ -148,21 +164,31 @@
     }
 
     function moveNoButton() {
-      startMusic();
+      const padding = 20;
+
+      const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+      const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
 
       noBtn.style.position = "fixed";
-
-      const padding = 20;
-      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
-      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding);
-
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
     }
 
-    noBtn.addEventListener("touchstart", moveNoButton);
-    noBtn.addEventListener("mouseover", moveNoButton);
-    noBtn.addEventListener("click", moveNoButton);
+    noBtn.addEventListener("click", () => {
+      startMusic();
+
+      // shake first
+      noBtn.classList.add("shake");
+
+      // after shake, move
+      setTimeout(() => {
+        noBtn.classList.remove("shake");
+        moveNoButton();
+      }, 400);
+    });
 
     yesBtn.addEventListener("click", () => {
       startMusic();
